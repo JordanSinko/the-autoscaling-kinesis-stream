@@ -19,8 +19,11 @@ const project = new AwsCdkConstructLibrary({
   repository: "https://github.com/JordanSinko/the-autoscaling-kinesis-stream",
   scripts: {
     format: "pretty-quick --staged",
+    "compile:construct": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen",
+    "compile:handler": "esbuild src/handler/index.ts --outfile=lib/handler/index.js --platform=node --format=cjs",
   },
   devDependencies: {
+    esbuild: "^0.7.9",
     husky: "^4.3.0",
     prettier: "^2.1.2",
     "pretty-quick": "^3.0.2",
@@ -33,6 +36,15 @@ const project = new AwsCdkConstructLibrary({
   buildWorkflow: true,
   mergify: true,
   npmRegistry: "npm.pkg.github.com",
+});
+
+project.addScript("compile", "npm run compile:construct && npm run compile:handler");
+
+project.addFields({
+  jsii: {
+    ...project.manifest.jsii,
+    excludeTypescript: ["src/handler"],
+  },
 });
 
 new ContentFile(project, ".prettierignore", {

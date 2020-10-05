@@ -14,7 +14,9 @@
     "release": "yarn --silent no-changes || (yarn bump && git push --follow-tags origin master)",
     "projen:upgrade": "yarn upgrade -L projen && CI=\"\" yarn projen",
     "format": "pretty-quick --staged",
-    "compile": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen",
+    "compile:construct": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen",
+    "compile:handler": "esbuild src/handler/index.ts --outfile=lib/handler/index.js --platform=node --format=cjs",
+    "compile": "npm run compile:construct && npm run compile:handler",
     "watch": "jsii -w --silence-warnings=reserved-word --no-fix-peer-dependencies",
     "build": "yarn test && yarn compile && yarn run package",
     "package": "jsii-pacmak",
@@ -33,6 +35,7 @@
     "@aws-cdk/assert": "^1.63.0",
     "@types/jest": "^26.0.7",
     "@types/node": "^10.17.0",
+    "esbuild": "^0.7.9",
     "husky": "^4.3.0",
     "jest": "^26.4.2",
     "jsii": "^1.11.0",
@@ -148,6 +151,9 @@
     "tsc": {
       "outDir": "lib",
       "rootDir": "src"
-    }
+    },
+    "excludeTypescript": [
+      "src/handler"
+    ]
   }
 }
